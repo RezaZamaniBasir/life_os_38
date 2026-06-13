@@ -1,0 +1,57 @@
+{
+  "name": "Life OS - Age 38",
+  "short_name": "Life OS 38",
+  "description": "داشبورد موبایلی سلامت، یادگیری، فرهنگ، لغت روزانه و پیام انگیزشی برای سال ۳۸ زندگی.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
+  "background_color": "#0B1020",
+  "theme_color": "#0B1020",
+  "orientation": "portrait-primary",
+  "dir": "rtl",
+  "lang": "fa",
+  "icons": [
+    {
+      "src": "./icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "ثبت امروز",
+      "short_name": "ثبت",
+      "description": "ثبت سریع روزانه",
+      "url": "./index.html#checkin",
+      "icons": [
+        {
+          "src": "./icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "داشبورد",
+      "short_name": "داشبورد",
+      "description": "مشاهده پیشرفت",
+      "url": "./index.html",
+      "icons": [
+        {
+          "src": "./icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
+}

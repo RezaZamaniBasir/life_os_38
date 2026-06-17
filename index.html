@@ -1,0 +1,1075 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0B1020" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Life OS 38" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Life OS 38</title>
+  <style>
+    :root{
+      --bg:#0B1020; --card:#111827; --card2:#1F2937; --muted:#94A3B8; --text:#F8FAFC;
+      --green:#10B981; --orange:#F97316; --purple:#8B5CF6; --blue:#3B82F6; --gold:#F59E0B; --red:#EF4444;
+      --line:rgba(255,255,255,.10); --soft:rgba(255,255,255,.06);
+      --radius:22px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0; padding:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Tahoma,Arial,sans-serif;}
+    body{min-height:100vh; padding-bottom:150px; overscroll-behavior-y:none;}
+    .app{max-width:560px; margin:0 auto; padding:16px 14px 120px;}
+    .hero{
+      background:
+        radial-gradient(circle at 12% 10%, rgba(139,92,246,.35), transparent 30%),
+        radial-gradient(circle at 85% 12%, rgba(16,185,129,.28), transparent 28%),
+        linear-gradient(135deg,#111827,#0B1020 60%,#111827);
+      border:1px solid var(--line); border-radius:28px; padding:18px; box-shadow:0 18px 50px rgba(0,0,0,.35);
+      margin-bottom:14px; position:relative; overflow:hidden;
+    }
+    .hero:after{content:""; position:absolute; inset:auto -50px -80px auto; width:180px; height:180px; background:rgba(245,158,11,.12); border-radius:50%;}
+    .kicker{font-size:12px; color:var(--muted); font-weight:700; letter-spacing:.3px}
+    h1{margin:7px 0 5px; font-size:27px; line-height:1.15}
+    .subtitle{margin:0; color:#CBD5E1; font-size:13px; line-height:1.8}
+    .today-row{display:flex; justify-content:space-between; align-items:center; margin-top:14px; gap:10px}
+    .pill{background:rgba(255,255,255,.08); border:1px solid var(--line); border-radius:999px; padding:8px 11px; font-size:12px; color:#E2E8F0}
+    .score-big{font-weight:900; color:var(--gold)}
+    .grid{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+    .card{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:14px; box-shadow:0 10px 28px rgba(0,0,0,.18);}
+    .card.full{grid-column:1/-1}
+    .metric-title{font-size:12px; color:#CBD5E1; display:flex; align-items:center; gap:6px}
+    .metric-value{font-size:26px; font-weight:900; margin:8px 0 9px; letter-spacing:-.5px}
+    .bar{height:10px; background:rgba(255,255,255,.08); border-radius:999px; overflow:hidden;}
+    .fill{height:100%; width:0%; border-radius:999px; transition:width .4s ease}
+    .green{background:var(--green)} .orange{background:var(--orange)} .purple{background:var(--purple)} .blue{background:var(--blue)} .gold{background:var(--gold)} .red{background:var(--red)}
+    .small{font-size:12px; color:var(--muted); line-height:1.7}
+    .section-title{font-size:17px; font-weight:900; margin:18px 2px 10px; display:flex; justify-content:space-between; align-items:center;}
+    .section-title span{font-size:12px; color:var(--muted); font-weight:700}
+    .screen{display:none}
+    .screen.active{display:block}
+    .nav{
+      position:fixed; bottom:0; right:0; left:0; max-width:560px; margin:0 auto; padding:8px 10px calc(8px + env(safe-area-inset-bottom));
+      background:rgba(11,16,32,.88); backdrop-filter:blur(18px); border-top:1px solid var(--line); z-index:50;
+    }
+    .nav-inner{display:grid; grid-template-columns:repeat(6,1fr); gap:6px}
+    .nav button{
+      border:0; border-radius:17px; padding:9px 3px; background:transparent; color:var(--muted); font-size:11px; font-weight:800;
+      display:flex; flex-direction:column; align-items:center; gap:4px;
+    }
+    .nav button.active{background:rgba(255,255,255,.10); color:#fff}
+    .nav .ico{font-size:18px}
+    .form{display:grid; gap:11px}
+    label{font-size:12px; color:#CBD5E1; font-weight:800; margin-bottom:6px; display:block}
+    input,select,textarea{
+      width:100%; border:1px solid var(--line); background:#0F172A; color:#fff; border-radius:16px; padding:13px 12px; font-size:16px; outline:none;
+    }
+    textarea{min-height:92px; resize:vertical; line-height:1.7}
+    input:focus,select:focus,textarea:focus{border-color:rgba(245,158,11,.65); box-shadow:0 0 0 3px rgba(245,158,11,.12)}
+    .toggle-grid{display:grid; grid-template-columns:1fr 1fr; gap:9px}
+    .toggle{
+      border:1px solid var(--line); background:#0F172A; color:#CBD5E1; border-radius:18px; padding:12px 10px; font-weight:900; font-size:13px;
+      display:flex; align-items:center; justify-content:space-between; gap:8px;
+    }
+    .toggle.active{background:rgba(16,185,129,.16); border-color:rgba(16,185,129,.5); color:#fff}
+    .toggle.bad.active{background:rgba(239,68,68,.16); border-color:rgba(239,68,68,.5)}
+    .dot{width:22px; height:22px; border-radius:50%; border:2px solid rgba(255,255,255,.25); display:grid; place-items:center; font-size:13px}
+    .toggle.active .dot{background:var(--green); border-color:var(--green); color:#052e2b}
+    .toggle.bad.active .dot{background:var(--red); border-color:var(--red); color:#fff}
+    .btn{
+      border:0; border-radius:18px; padding:14px 16px; font-weight:900; color:#08111F; background:var(--gold); font-size:15px;
+      box-shadow:0 10px 22px rgba(245,158,11,.20);
+    }
+    .btn.secondary{background:#1F2937; color:#fff; border:1px solid var(--line); box-shadow:none}
+    .btn.danger{background:rgba(239,68,68,.16); color:#FECACA; border:1px solid rgba(239,68,68,.35); box-shadow:none}
+    .row{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+    .list{display:grid; gap:9px}
+    .item{
+      background:#0F172A; border:1px solid var(--line); border-radius:18px; padding:12px;
+    }
+    .item-top{display:flex; justify-content:space-between; gap:10px; align-items:center}
+    .item-title{font-weight:900; font-size:14px}
+    .badge{font-size:11px; border-radius:999px; padding:5px 9px; background:rgba(255,255,255,.08); color:#CBD5E1; white-space:nowrap}
+    .empty{color:var(--muted); text-align:center; padding:30px 10px; border:1px dashed var(--line); border-radius:20px; background:rgba(255,255,255,.03)}
+    .toast{
+      position:fixed; top:14px; right:16px; left:16px; max-width:520px; margin:0 auto; background:#DCFCE7; color:#064E3B;
+      border-radius:18px; padding:13px 14px; font-weight:900; z-index:99; transform:translateY(-160%); transition:.25s; text-align:center
+    }
+    .toast.show{transform:translateY(0)}
+    .screen{padding-bottom:28px}
+    .quote{border-right:4px solid var(--gold); background:rgba(245,158,11,.08); padding:12px; border-radius:16px; color:#FDE68A; line-height:1.8}
+    .tiny-actions{display:flex; gap:8px; flex-wrap:wrap}
+    .tiny-actions .btn{font-size:12px; padding:10px 12px; border-radius:14px}
+    .progress-list{display:grid; gap:10px}
+    .progress-row{display:grid; grid-template-columns:86px 1fr 46px; align-items:center; gap:9px; font-size:12px; color:#E2E8F0}
+    .safe{padding:11px 12px; border-radius:16px; background:rgba(59,130,246,.10); border:1px solid rgba(59,130,246,.25); color:#BFDBFE; line-height:1.8; font-size:12px}
+    .review-grid{display:grid;gap:10px}
+    .review-card{background:rgba(255,255,255,.045);border:1px solid var(--line);border-radius:18px;padding:12px;margin-top:10px}
+    .review-card b{display:block;margin-bottom:7px;color:#FDE68A}
+
+    .gallery-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+    .gallery-card{background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+    .gallery-thumb{aspect-ratio:1/1.35;background:rgba(255,255,255,.04);display:flex;align-items:center;justify-content:center}
+    .gallery-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+    .gallery-placeholder{font-size:42px;opacity:.75}
+    .gallery-body{padding:10px}
+    .gallery-type{font-size:11px;color:#FDE68A;font-weight:900;margin-bottom:4px}
+    .gallery-title{font-size:13px;font-weight:900;line-height:1.8;color:#F8FAFC}
+    .gallery-date{font-size:11px;color:var(--muted);margin-top:6px}
+    .upload-box{margin-top:8px;padding:10px;border-radius:14px;border:1px dashed rgba(255,255,255,.2);background:rgba(255,255,255,.03)}
+    .upload-box input[type="file"]{width:100%;font-size:12px;color:#CBD5E1}
+    .culture-preview{margin-top:8px;width:72px;height:96px;border-radius:10px;overflow:hidden;border:1px solid var(--line);background:rgba(255,255,255,.04);display:none}
+    .culture-preview img{width:100%;height:100%;object-fit:cover;display:block}
+
+    .gallery-toolbar{
+      display:flex; gap:8px; overflow-x:auto; padding:4px 0 12px; scrollbar-width:none;
+    }
+    .gallery-toolbar::-webkit-scrollbar{display:none}
+    .filter-pill{
+      flex:0 0 auto; border:1px solid var(--line); background:rgba(255,255,255,.05);
+      color:#CBD5E1; border-radius:999px; padding:8px 11px; font-size:12px; font-weight:900;
+    }
+    .filter-pill.active{background:rgba(245,158,11,.18); border-color:rgba(245,158,11,.38); color:#FDE68A}
+    .gallery-grid.enhanced{grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px}
+    .gallery-card.enhanced{
+      position:relative; border-radius:22px; overflow:hidden;
+      background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.035));
+      box-shadow:0 12px 32px rgba(0,0,0,.20);
+    }
+    .gallery-card.enhanced .gallery-thumb{aspect-ratio:1/1.42; position:relative}
+    .gallery-card.enhanced .gallery-thumb:after{
+      content:""; position:absolute; inset:auto 0 0 0; height:45%;
+      background:linear-gradient(0deg,rgba(2,6,23,.86),rgba(2,6,23,0));
+      pointer-events:none;
+    }
+    .type-chip{
+      position:absolute; top:9px; right:9px; z-index:2;
+      background:rgba(15,23,42,.72); border:1px solid rgba(255,255,255,.14);
+      backdrop-filter:blur(10px); border-radius:999px; padding:6px 8px;
+      font-size:10.5px; color:#FDE68A; font-weight:950;
+    }
+    .rating-chip{
+      position:absolute; left:9px; bottom:9px; z-index:2;
+      background:rgba(15,23,42,.78); border:1px solid rgba(245,158,11,.28);
+      border-radius:999px; padding:6px 8px; font-size:11px; color:#FDE68A; font-weight:950;
+    }
+    .gallery-card.enhanced .gallery-body{padding:11px}
+    .gallery-card.enhanced .gallery-title{font-size:13.5px; min-height:38px}
+    .gallery-meta-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px}
+    .rating-row{display:grid;grid-template-columns:1fr 92px;gap:8px;align-items:end;margin-top:8px}
+    .rating-row label{margin:0}
+    .culture-rating{width:100%}
+
+
+
+    .daily-card{
+      background:linear-gradient(135deg,rgba(245,158,11,.16),rgba(139,92,246,.13));
+      border:1px solid rgba(245,158,11,.24);
+      border-radius:22px;
+      padding:14px;
+      margin-top:10px;
+    }
+    .daily-label{font-size:11px;color:#FDE68A;font-weight:900;letter-spacing:.2px;margin-bottom:6px}
+    .word-main{font-size:25px;font-weight:950;direction:ltr;text-align:left;margin:4px 0;color:#fff}
+    .word-meta{font-size:12px;color:#E2E8F0;line-height:1.8}
+    .word-example{font-size:12px;color:#CBD5E1;line-height:1.8;direction:ltr;text-align:left;margin-top:8px;border-top:1px solid rgba(255,255,255,.10);padding-top:8px}
+    .motivation-text{font-size:14px;color:#F8FAFC;line-height:2;font-weight:800}
+
+    .entry-card{
+      background:rgba(255,255,255,.045); border:1px solid var(--line); border-radius:18px; padding:10px; margin-top:10px;
+    }
+    .entry-head{display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:8px}
+    .entry-head b{font-size:12px; color:#E2E8F0}
+    .remove-entry{
+      border:0; background:rgba(239,68,68,.16); color:#FECACA; border:1px solid rgba(239,68,68,.28);
+      border-radius:999px; padding:6px 9px; font-size:11px; font-weight:900;
+    }
+    .add-entry{
+      width:100%; margin-top:10px; border:1px dashed rgba(255,255,255,.25); background:rgba(255,255,255,.04);
+      color:#FDE68A; border-radius:16px; padding:12px; font-weight:900; font-size:13px;
+    }
+
+    @media(min-width:520px){ .app{padding-top:22px} }
+  
+    .install-card{display:none;margin-top:12px;background:linear-gradient(135deg,rgba(34,197,94,.12),rgba(59,130,246,.10));border:1px solid rgba(34,197,94,.28);border-radius:22px;padding:13px}
+    .install-card.show{display:block}
+    .install-title{font-size:13px;font-weight:950;color:#BBF7D0;margin-bottom:6px}
+    .install-text{font-size:12px;line-height:1.9;color:#DCEAFE}
+    .install-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+    .install-btn{border:0;border-radius:15px;padding:11px 10px;font-weight:950;background:#22C55E;color:#052E16;font-size:12px}
+    .install-help{border:1px solid rgba(255,255,255,.15);border-radius:15px;padding:11px 10px;background:rgba(255,255,255,.06);color:#E2E8F0;font-weight:900;font-size:12px}
+</style>
+
+  <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+
+
+  <link rel="manifest" href="./manifest.webmanifest">
+  <meta name="theme-color" content="#0B1020">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Life OS 38">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+</head>
+<body>
+  <main class="app">
+    <section id="home" class="screen active">
+      <div class="hero">
+        <div class="kicker">LIFE OS MOBILE · AGE 38</div>
+        <h1>داشبورد زندگی سال ۳۸</h1>
+        <p class="subtitle">سلامت‌تر، باسوادتر، باتجربه‌تر و قوی‌تر — بدون اینکه مدام از اول شروع کنی.</p>
+        <div class="today-row">
+          <div class="pill" id="todayLabel">امروز</div>
+          <div class="pill">Year Score: <b class="score-big" id="yearScore">0%</b></div>
+        </div>
+      </div>
+
+      <div class="daily-card">
+        <div class="daily-label">📘 لغت انگلیسی امروز</div>
+        <div class="word-main" id="dailyWord">Continue</div>
+        <div class="word-meta" id="dailyWordMeta">ادامه دادن · فعل</div>
+        <div class="word-example" id="dailyWordExample">I continue from where I stopped.</div>
+      </div>
+
+      <div class="daily-card">
+        <div class="daily-label">🧠 پیام انگیزشی و روانشناسی امروز</div>
+        <div class="motivation-text" id="dailyMotivation">امروز لازم نیست کامل باشی؛ فقط باید ادامه بدهی.</div>
+      </div>
+
+      <div class="install-card" id="installCard">
+        <div class="install-title">📲 نصب روی گوشی</div>
+        <div class="install-text" id="installText">اگر Chrome اجازه نصب بدهد، از اینجا می‌توانی اپ را نصب کنی. اگر فقط Add to Home Screen دیدی، همان را بزن.</div>
+        <div class="install-actions">
+          <button class="install-btn" id="installAppBtn" type="button">نصب اپ</button>
+          <button class="install-help" id="installHelpBtn" type="button">راهنما</button>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="card">
+          <div class="metric-title">🛑 سلامت · منع</div>
+          <div class="metric-value" id="preventScore">0%</div>
+          <div class="bar"><div class="fill green" id="preventBar"></div></div>
+          <div class="small" id="preventSub">بدون سیگار، فست‌فود، شکر، چیپس/پفک/تخمه و نوشابه</div>
+        </div>
+        <div class="card">
+          <div class="metric-title">✅ سلامت · انجام</div>
+          <div class="metric-value" id="actionScore">0%</div>
+          <div class="bar"><div class="fill green" id="actionBar"></div></div>
+          <div class="small" id="actionSub">آب، میوه، ویتامین، شیر و سلامت دندان</div>
+        </div>
+        <div class="card">
+          <div class="metric-title">🧠 حرف منفی نزدن</div>
+          <div class="metric-value" id="negativeTalkScore">0%</div>
+          <div class="bar"><div class="fill gold" id="negativeTalkBar"></div></div>
+          <div class="small" id="negativeTalkSub">هدف: روزهایی که حرف منفی نزدی</div>
+        </div>
+        <div class="card">
+          <div class="metric-title">📚 یادگیری</div>
+          <div class="metric-value" id="learningScore">0%</div>
+          <div class="bar"><div class="fill orange" id="learningBar"></div></div>
+          <div class="small" id="learningSub">هدف: ۱۰ ساعت در هفته</div>
+        </div>
+        <div class="card">
+          <div class="metric-title">🎭 فرهنگ</div>
+          <div class="metric-value" id="cultureScore">0%</div>
+          <div class="bar"><div class="fill purple" id="cultureBar"></div></div>
+          <div class="small" id="cultureSub">کتاب، فیلم، موسیقی، بازی</div>
+        </div>
+        <div class="card">
+          <div class="metric-title">🔁 ادامه دادن</div>
+          <div class="metric-value" id="continueScore">0%</div>
+          <div class="bar"><div class="fill gold" id="continueBar"></div></div>
+          <div class="small">از همان‌جا ادامه بده.</div>
+        </div>
+      </div>
+
+      <div class="section-title">پیشرفت فرهنگی <span>هدف سالانه</span></div>
+      <div class="card full">
+        <div class="progress-list" id="cultureProgress"></div>
+      </div>
+
+      <div class="section-title">قانون طلایی هفته</div>
+      <div class="quote">اگر وقفه افتاد، از اول شروع نکن. فقط از همان‌جایی که بودی ادامه بده.</div>
+    </section>
+
+    <section id="checkin" class="screen">
+      <div class="hero">
+        <div class="kicker">DAILY CHECK-IN</div>
+        <h1>ثبت سریع امروز</h1>
+        <p class="subtitle">این صفحه برای موبایل ساخته شده؛ هر شب یا صبح فقط چند تیک بزن.</p>
+      </div>
+
+      <div class="form">
+        <div class="card">
+          <label>تاریخ</label>
+          <input type="date" id="date" />
+        </div>
+
+        <div class="card">
+          <label>سلامت امروز</label>
+          <div class="toggle-grid">
+            <button class="toggle" data-key="noSmoke">🚭 بدون سیگار <span class="dot">✓</span></button>
+            <button class="toggle" data-key="noFastFood">🍔 بدون فست‌فود <span class="dot">✓</span></button>
+            <button class="toggle" data-key="noSugar">🍬 بدون شکر اضافه <span class="dot">✓</span></button>
+            <button class="toggle" data-key="noChips">🥨 بدون چیپس/پفک/تخمه <span class="dot">✓</span></button>
+            <button class="toggle" data-key="noSoda">🥤 بدون نوشابه <span class="dot">✓</span></button>
+            <button class="toggle" data-key="water">💧 آب کافی <span class="dot">✓</span></button>
+            <button class="toggle" data-key="fruit">🍎 میوه <span class="dot">✓</span></button>
+            <button class="toggle" data-key="vitamin">💊 ویتامین <span class="dot">✓</span></button>
+            <button class="toggle" data-key="milk">🥛 شیر روزانه <span class="dot">✓</span></button>
+            <button class="toggle" data-key="dental">🦷 سلامت دندان <span class="dot">✓</span></button>
+            <button class="toggle" data-key="noNegativeTalk">🤐 حرف منفی نزدم <span class="dot">✓</span></button>
+            <button class="toggle" data-key="exercise">🚶 ورزش/پیاده‌روی <span class="dot">✓</span></button>
+          </div>
+        </div>
+
+        <div class="card">
+          <label>بلوک‌های یادگیری امروز</label>
+          <div id="learningEntries"></div>
+          <button class="add-entry" id="addLearning" type="button">+ افزودن موضوع‌های یادگیری</button>
+        </div>
+
+        <div class="card">
+          <label>تجربه‌های فرهنگی امروز</label>
+          <div id="cultureEntries"></div>
+          <button class="add-entry" id="addCulture" type="button">+ افزودن تجربه فرهنگی</button>
+        </div>
+
+        <div class="card">
+          <label>Continue Tracker</label>
+          <div class="toggle-grid">
+            <button class="toggle" data-key="continuedAfterBreak">🔁 بعد از وقفه برگشتم <span class="dot">✓</span></button>
+            <button class="toggle" data-key="didNotRestart">📍 از اول شروع نکردم <span class="dot">✓</span></button>
+          </div>
+        </div>
+
+        <div class="card">
+          <label>یادداشت کوتاه</label>
+          <textarea id="note" placeholder="امروز چه چیزی ارزش ثبت دارد؟"></textarea>
+        </div>
+
+        <button class="btn" id="saveBtn">ثبت امروز</button>
+      </div>
+    </section>
+
+    <section id="logs" class="screen">
+      <div class="hero">
+        <div class="kicker">LOGS</div>
+        <h1>ثبت‌های اخیر</h1>
+        <p class="subtitle">همه چیز فعلاً روی همین گوشی و داخل مرورگر ذخیره می‌شود.</p>
+      </div>
+      <div class="tiny-actions">
+        <button class="btn secondary" id="exportCsv">خروجی CSV</button>
+        <button class="btn secondary" id="exportJson">خروجی JSON</button>
+        <label class="btn secondary" style="display:inline-block">
+          ورود JSON
+          <input id="importJson" type="file" accept=".json,application/json" style="display:none" />
+        </label>
+        <button class="btn danger" id="clearData">پاک کردن داده‌ها</button>
+      </div>
+      <div class="section-title">آخرین ثبت‌ها</div>
+      <div class="list" id="logList"></div>
+    </section>
+
+    <section id="goals" class="screen">
+      <div class="hero">
+        <div class="kicker">GOALS</div>
+        <h1>اهداف سال ۳۸</h1>
+        <p class="subtitle">این اهداف در خود فایل ذخیره شده‌اند و مبنای محاسبه امتیازها هستند.</p>
+      </div>
+      <div class="card full">
+        <div class="progress-list">
+          <div class="progress-row"><b>🚭 بدون سیگار</b><div class="bar"><div class="fill green" style="width:100%"></div></div><span>365</span></div>
+          <div class="progress-row"><b>💧 آب کافی</b><div class="bar"><div class="fill green" style="width:82%"></div></div><span>300</span></div>
+          <div class="progress-row"><b>🚶 ورزش</b><div class="bar"><div class="fill green" style="width:41%"></div></div><span>150</span></div>
+          <div class="progress-row"><b>📚 یادگیری</b><div class="bar"><div class="fill orange" style="width:100%"></div></div><span>520h</span></div>
+          <div class="progress-row"><b>📖 کتاب</b><div class="bar"><div class="fill purple" style="width:100%"></div></div><span>12</span></div>
+          <div class="progress-row"><b>🎵 آلبوم</b><div class="bar"><div class="fill purple" style="width:100%"></div></div><span>52</span></div>
+          <div class="progress-row"><b>🎬 فیلم</b><div class="bar"><div class="fill purple" style="width:100%"></div></div><span>52</span></div>
+          <div class="progress-row"><b>📺 سریال</b><div class="bar"><div class="fill purple" style="width:100%"></div></div><span>6</span></div>
+          <div class="progress-row"><b>🎲 بردگیم</b><div class="bar"><div class="fill purple" style="width:100%"></div></div><span>24</span></div>
+          <div class="progress-row"><b>🎮 ویدیوگیم</b><div class="bar"><div class="fill purple" style="width:100%"></div></div><span>8</span></div>
+          <div class="progress-row"><b>✈️ سفر</b><div class="bar"><div class="fill purple" style="width:100%"></div></div><span>3</span></div>
+        </div>
+      </div>
+      <div class="section-title">نکته مهم</div>
+      <div class="safe">این فایل جایگزین پزشک نیست. برای کبد چرب درجه ۲، پیگیری با پزشک، آزمایش‌ها، وزن، دور شکم و برنامه تغذیه/ورزش ایمن خیلی مهم است.</div>
+    </section>
+
+    <section id="review" class="screen">
+      <div class="hero">
+        <div class="kicker">WEEKLY REVIEW</div>
+        <h1>مرور هفته</h1>
+        <p class="subtitle">هفته را قضاوت نکن؛ فقط یاد بگیر و ادامه بده. قانون اصلی: از اول شروع نکن.</p>
+      </div>
+
+      <div class="card">
+        <label>مرور هفتگی</label>
+        <div class="review-grid">
+          <input id="reviewProud" placeholder="این هفته به چه چیزی افتخار می‌کنم؟" />
+          <input id="reviewSlip" placeholder="کجا لغزش داشتم و چه فهمیدم؟" />
+          <input id="reviewContinue" placeholder="چه چیزی را نباید از اول شروع کنم؟" />
+          <input id="reviewNext" placeholder="تمرکز هفته بعد چیست؟" />
+          <button class="btn" id="saveReview" type="button">ثبت مرور هفته</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <label>مرورهای قبلی</label>
+        <div id="reviewList"></div>
+      </div>
+    </section>
+
+
+    <section id="culture" class="screen">
+      <div class="hero">
+        <div class="kicker">CULTURAL WALL</div>
+        <h1>دیوار فرهنگی</h1>
+        <p class="subtitle">هر کتاب، فیلم، آلبوم، بردگیم، سریال یا ویدیوگیمی که ثبت می‌کنی، اینجا با thumbnail نمایش داده می‌شود.</p>
+      </div>
+
+      <div class="card">
+        <label>آرشیو فرهنگی</label>
+        <div class="gallery-toolbar" id="cultureFilters">
+          <button class="filter-pill active" data-filter="همه">همه</button>
+          <button class="filter-pill" data-filter="کتاب">کتاب</button>
+          <button class="filter-pill" data-filter="فیلم">فیلم</button>
+          <button class="filter-pill" data-filter="سریال">سریال</button>
+          <button class="filter-pill" data-filter="آلبوم موسیقی">موسیقی</button>
+          <button class="filter-pill" data-filter="بردگیم">بردگیم</button>
+          <button class="filter-pill" data-filter="ویدیوگیم">ویدیوگیم</button>
+          <button class="filter-pill" data-filter="سفر">سفر</button>
+        </div>
+        <div id="cultureGallery" class="gallery-grid enhanced"></div>
+      </div>
+
+      <div class="card">
+        <label>نکته</label>
+        <div class="safe">برای هر آیتم فرهنگی می‌توانی کاور/thumbnail را از گالری گوشی انتخاب کنی. تصویر به‌صورت فشرده ذخیره می‌شود تا سبک‌تر بماند.</div>
+      </div>
+    </section>
+
+</main>
+
+  <nav class="nav">
+    <div class="nav-inner">
+      <button data-screen="home" class="active"><span class="ico">🏠</span>داشبورد</button>
+      <button data-screen="checkin"><span class="ico">✅</span>ثبت</button>
+      <button data-screen="logs"><span class="ico">🗂️</span>داده‌ها</button>
+      <button data-screen="goals"><span class="ico">🎯</span>اهداف</button>
+      <button data-screen="culture"><span class="ico">🎭</span>فرهنگی</button>
+      <button data-screen="review"><span class="ico">🧭</span>مرور</button>
+    </div>
+  </nav>
+
+  <div class="toast" id="toast">ثبت شد</div>
+
+<script>
+const TARGETS = {
+  noSmoke:365, water:300, fruit:300, vitamin:300, exercise:150,
+  learningHours:520,
+  culture: {"کتاب":12, "آلبوم موسیقی":52, "فیلم":52, "سریال":6, "بردگیم":24, "ویدیوگیم":8, "سفر":3},
+  continue:24
+};
+const KEY = "life_os_age_38_mobile_v1";
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+
+function todayISO(){
+  const d = new Date();
+  d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+  return d.toISOString().slice(0,10);
+}
+function load(){ try{return JSON.parse(localStorage.getItem(KEY)||"[]")}catch(e){return[]} }
+function saveAll(data){ localStorage.setItem(KEY, JSON.stringify(data)); }
+function pct(n,d){ return d ? Math.min(100, Math.round((n/d)*100)) : 0; }
+function setBar(id, v){ $(id).style.width = Math.max(0,Math.min(100,v)) + "%"; }
+function toast(msg){ const t=$("#toast"); t.textContent=msg; t.classList.add("show"); setTimeout(()=>t.classList.remove("show"),1800); }
+function count(data, key){ return data.filter(x=>x[key]).length; }
+function sum(data, key){ return data.reduce((a,b)=>a+(parseFloat(b[key])||0),0); }
+
+
+const DAILY_WORDS = [
+  {word:"perseverance", type:"noun", fa:"پشتکارِ بلندمدت", example:"Perseverance matters more than occasional intensity."},
+  {word:"equanimity", type:"noun", fa:"آرامش و تعادل ذهنی در فشار", example:"Equanimity helps you respond instead of react."},
+  {word:"self-regulation", type:"noun", fa:"خودتنظیمی", example:"Self-regulation is the ability to guide your behavior despite impulses."},
+  {word:"deliberate", type:"adjective/verb", fa:"آگاهانه / سنجیده عمل کردن", example:"A deliberate choice is stronger than an automatic habit."},
+  {word:"discernment", type:"noun", fa:"تشخیص دقیق و قضاوت سنجیده", example:"Discernment helps you choose what deserves your attention."},
+  {word:"resilience", type:"noun", fa:"تاب‌آوری", example:"Resilience is the skill of returning after disruption."},
+  {word:"temperance", type:"noun", fa:"خویشتن‌داری و میانه‌روی", example:"Temperance makes discipline sustainable."},
+  {word:"fortitude", type:"noun", fa:"استقامت در سختی", example:"Fortitude is quiet strength under pressure."},
+  {word:"intentionality", type:"noun", fa:"قصد آگاهانه", example:"Intentionality turns a normal day into a designed day."},
+  {word:"metacognition", type:"noun", fa:"فکر کردن درباره فکر خود", example:"Metacognition helps you notice why you avoid a task."},
+  {word:"composure", type:"noun", fa:"حفظ آرامش", example:"Composure is a competitive advantage in stressful moments."},
+  {word:"sustainable", type:"adjective", fa:"پایدار و قابل ادامه", example:"A sustainable routine survives bad days."},
+  {word:"incremental", type:"adjective", fa:"تدریجی و مرحله‌به‌مرحله", example:"Incremental improvement compounds over time."},
+  {word:"accountability", type:"noun", fa:"پاسخ‌گویی و مسئولیت‌پذیری", example:"Accountability turns intention into visible action."},
+  {word:"gratification", type:"noun", fa:"رضایت یا لذت", example:"Delayed gratification strengthens long-term goals."},
+  {word:"impulse", type:"noun", fa:"تکانه و میل ناگهانی", example:"An impulse becomes weaker when you observe it."},
+  {word:"restraint", type:"noun", fa:"مهار و خودداری", example:"Restraint is not deprivation; it is direction."},
+  {word:"reframing", type:"noun", fa:"بازقاب‌بندی ذهنی", example:"Reframing a setback can prevent a full relapse."},
+  {word:"adherence", type:"noun", fa:"پایبندی", example:"Adherence to small habits creates identity evidence."},
+  {word:"agency", type:"noun", fa:"عاملیت و قدرت انتخاب", example:"Agency means you are not only reacting to life."},
+  {word:"aspiration", type:"noun", fa:"آرمان و خواسته بلندمدت", example:"Aspiration gives direction to daily sacrifice."},
+  {word:"cultivation", type:"noun", fa:"پرورش تدریجی", example:"Character is cultivation, not a sudden transformation."},
+  {word:"tenacity", type:"noun", fa:"سرسختی مثبت", example:"Tenacity keeps you attached to the path."},
+  {word:"prudence", type:"noun", fa:"دوراندیشی و احتیاط عاقلانه", example:"Prudence asks what this choice costs tomorrow."},
+  {word:"conscientiousness", type:"noun", fa:"وظیفه‌شناسی و دقت اخلاقی", example:"Conscientiousness predicts consistent follow-through."},
+  {word:"rumination", type:"noun", fa:"نشخوار فکری", example:"Rumination feels like problem-solving but often drains energy."},
+  {word:"mindfulness", type:"noun", fa:"حضور ذهن و آگاهی لحظه‌ای", example:"Mindfulness creates space between urge and action."},
+  {word:"autonomy", type:"noun", fa:"خودمختاری و استقلال در انتخاب", example:"Autonomy grows when your habits match your values."}
+];
+
+const DAILY_MESSAGES = [
+  "امروز لازم نیست بهترین نسخه خودت باشی؛ فقط کافی است از دیروز کمی آگاه‌تر باشی.",
+  "وقتی وقفه می‌افتد، مغز می‌گوید از اول شروع کن؛ رشد واقعی یعنی از همان‌جا ادامه بدهی.",
+  "یک روز بد، هویت تو را تعریف نمی‌کند. برگشتن تو را تعریف می‌کند.",
+  "موفقیت امسال تو بیشتر از انگیزه، به طراحی محیط و تکرارهای کوچک وابسته است.",
+  "اگر فقط یک کار مهم انجام دادی، روزت بی‌ارزش نبوده است.",
+  "ترک سیگار یک نبرد هویتی است: هر روز بدون سیگار یعنی یک رأی به آدمی که می‌خواهی بشوی.",
+  "کبد، بدن و ذهن تو با تصمیم‌های کوچک روزانه بهتر می‌شوند، نه با تصمیم‌های بزرگ مقطعی.",
+  "لازم نیست همه هدف‌ها را امروز جلو ببری. فقط یکی را انتخاب کن و یک قدم بردار.",
+  "وقتی حس عقب‌افتادگی داری، به جای جبران افراطی، یک حرکت کوچک و قابل تکرار انجام بده.",
+  "زندگی خوب فقط پروژه نیست؛ تجربه، آرامش، بازی، موسیقی و رابطه هم بخشی از رشد هستند.",
+  "ثبات یعنی بعد از یک روز ناقص هم خودت را کنار نگذاری.",
+  "هویت جدید با جمله ساخته نمی‌شود؛ با شواهد کوچک روزانه ساخته می‌شود.",
+  "آدم بالغ کسی نیست که همیشه منظم است؛ کسی است که بعد از بی‌نظمی برمی‌گردد.",
+  "امروز دنبال کامل بودن نباش. دنبال قطع نکردن زنجیره باش.",
+  "هر بار ثبت کردن، یعنی داری زندگی‌ات را قابل مشاهده می‌کنی.",
+  "اگر انرژی کم است، استاندارد را پایین بیاور، اما مسیر را رها نکن.",
+  "تو قرار نیست یک‌باره عوض شوی؛ قرار است کمتر خودت را ترک کنی.",
+  "مطالعه، ورزش و سلامت وقتی پایدار می‌شوند که به هویت تبدیل شوند، نه فشار.",
+  "مسیر ۳۸ سالگی تو با یک قانون ساده جلو می‌رود: ادامه، نه شروع دوباره.",
+  "هر روزی که سیگار نکشی، به آینده‌ات یک هدیه واقعی داده‌ای.",
+  "فکر کردن زیاد به گذشته، انرژی امروز را می‌خورد. امروز یک رأی تازه بده.",
+  "اگر فقط ۲۰ دقیقه یاد گرفتی، باز هم آدمی هستی که امروز یادگیری را قطع نکرده است.",
+  "تفریح سالم اتلاف وقت نیست؛ سوخت روانی ادامه دادن است.",
+  "پیشرفت واقعی آرام است، اما انباشته می‌شود.",
+  "به جای اینکه بپرسی چقدر عقبم، بپرس قدم بعدی چیست.",
+  "امروز کافی است یک تصمیم با آینده‌ات مهربان‌تر باشد.",
+  "ذهن تو از وضوح خوشش می‌آید؛ ثبت کن تا مبهم نماند.",
+  "لغزش شکست نیست؛ تحلیل نکردن لغزش است که آن را تکرار می‌کند.",
+  "بدن تو پروژه نیست؛ خانه توست. با آن با احترام رفتار کن.",
+  "تو لازم نیست هر روز انگیزه داشته باشی؛ فقط یک سیستم لازم داری که تو را برگرداند."
+];
+
+function dayOfYearIndex(){
+  const now = new Date();
+  const start = new Date(now.getFullYear(), 0, 0);
+  const diff = now - start + ((start.getTimezoneOffset() - now.getTimezoneOffset()) * 60 * 1000);
+  return Math.floor(diff / 86400000);
+}
+function updateDailyInspiration(){
+  const idx = dayOfYearIndex();
+  const w = DAILY_WORDS[idx % DAILY_WORDS.length];
+  const m = DAILY_MESSAGES[idx % DAILY_MESSAGES.length];
+  const wordEl = $("#dailyWord");
+  if(!wordEl) return;
+  wordEl.textContent = w.word;
+  $("#dailyWordMeta").textContent = `${w.fa} · ${w.type}`;
+  $("#dailyWordExample").textContent = w.example;
+  $("#dailyMotivation").textContent = m;
+}
+
+
+function loadMeta(){
+  return JSON.parse(localStorage.getItem("lifeOS38Meta") || "{}");
+}
+function saveMeta(meta){
+  localStorage.setItem("lifeOS38Meta", JSON.stringify(meta));
+}
+function saveWeeklyReview(){
+  const meta = loadMeta();
+  const reviews = meta.reviews || [];
+  reviews.unshift({
+    date: todayISO ? todayISO() : new Date().toISOString().slice(0,10),
+    proud: $("#reviewProud").value.trim(),
+    slip: $("#reviewSlip").value.trim(),
+    continueRule: $("#reviewContinue").value.trim(),
+    next: $("#reviewNext").value.trim()
+  });
+  meta.reviews = reviews.slice(0, 60);
+  saveMeta(meta);
+  $("#reviewProud").value = "";
+  $("#reviewSlip").value = "";
+  $("#reviewContinue").value = "";
+  $("#reviewNext").value = "";
+  renderReviews();
+  renderCultureGallery();
+  toast("مرور هفته ثبت شد");
+}
+function renderReviews(){
+  const list = $("#reviewList");
+  if(!list) return;
+  const reviews = (loadMeta().reviews || []);
+  if(!reviews.length){
+    list.innerHTML = '<div class="small">هنوز مروری ثبت نشده.</div>';
+    return;
+  }
+  list.innerHTML = reviews.map(r=>`
+    <div class="review-card">
+      <b>${r.date}</b>
+      <div class="small" style="line-height:1.9">
+        افتخار: ${r.proud || "—"}<br>
+        لغزش/یادگیری: ${r.slip || "—"}<br>
+        ادامه نه شروع دوباره: ${r.continueRule || "—"}<br>
+        هفته بعد: ${r.next || "—"}
+      </div>
+    </div>
+  `).join("");
+}
+
+
+function boolPrevent(entry, key){
+  if(key === "noSmoke") return !!entry.noSmoke;
+  if(key === "noFastFood") return entry.noFastFood === true || entry.fastFood === false;
+  if(key === "noSugar") return entry.noSugar === true || entry.sugar === false;
+  if(key === "noChips") return entry.noChips === true || entry.chips === false;
+  if(key === "noSoda") return entry.noSoda === true || entry.soda === true;
+  return !!entry[key];
+}
+function countPrevent(data, key){
+  return data.filter(x => boolPrevent(x, key)).length;
+}
+
+
+function fileToDataURL(file){
+  return new Promise((resolve, reject)=>{
+    const reader = new FileReader();
+    reader.onload = ()=>resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+function resizeImageDataUrl(dataUrl, maxW=320, maxH=420, quality=0.78){
+  return new Promise((resolve)=>{
+    const img = new Image();
+    img.onload = ()=>{
+      let {width, height} = img;
+      const ratio = Math.min(maxW / width, maxH / height, 1);
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.round(width * ratio);
+      canvas.height = Math.round(height * ratio);
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      resolve(canvas.toDataURL("image/jpeg", quality));
+    };
+    img.src = dataUrl;
+  });
+}
+async function processCultureFileInput(input){
+  const file = input.files && input.files[0];
+  if(!file) return;
+  const card = input.closest(".culture-entry");
+  const raw = await fileToDataURL(file);
+  const resized = await resizeImageDataUrl(raw);
+  card.dataset.image = resized;
+  const preview = card.querySelector(".culture-preview");
+  const img = preview.querySelector("img");
+  img.src = resized;
+  preview.style.display = "block";
+}
+let activeCultureFilter = "همه";
+function cultureEmoji(type){
+  return ({'کتاب':'📚','آلبوم موسیقی':'🎵','فیلم':'🎬','سریال':'📺','بردگیم':'🎲','ویدیوگیم':'🎮','سفر':'🧳'})[type] || "🎭";
+}
+function renderCultureGallery(){
+  const box = $("#cultureGallery");
+  if(!box) return;
+  const data = load().slice().reverse();
+  let items = [];
+  data.forEach(entry=>{
+    normalizeCulture(entry).forEach(c=>{
+      items.push({...c, date: entry.date || ""});
+    });
+  });
+  if(activeCultureFilter && activeCultureFilter !== "همه"){
+    items = items.filter(c => c.type === activeCultureFilter);
+  }
+  if(!items.length){
+    box.innerHTML = '<div class="empty" style="grid-column:1/-1">هنوز چیزی برای این فیلتر ثبت نکرده‌ای.</div>';
+    return;
+  }
+  box.innerHTML = items.map(c=>`
+    <div class="gallery-card enhanced">
+      <div class="gallery-thumb">
+        <div class="type-chip">${cultureEmoji(c.type)} ${c.type}</div>
+        ${c.rating ? `<div class="rating-chip">⭐ ${c.rating}/10</div>` : ""}
+        ${c.image ? `<img src="${c.image}" alt="${c.title}">` : `<div class="gallery-placeholder">${cultureEmoji(c.type)}</div>`}
+      </div>
+      <div class="gallery-body">
+        <div class="gallery-title">${c.title}</div>
+        <div class="gallery-meta-row">
+          <div class="gallery-date">${c.date}</div>
+          <div class="gallery-type">${c.rating ? "امتیاز: " + c.rating + "/10" : "بدون امتیاز"}</div>
+        </div>
+      </div>
+    </div>
+  `).join("");
+}
+
+function updateDashboard(){
+  updateDailyInspiration();
+  const data = load();
+  $("#todayLabel").textContent = new Intl.DateTimeFormat("fa-IR", {weekday:"long", month:"long", day:"numeric"}).format(new Date());
+
+  const preventionKeys = ["noSmoke","noFastFood","noSugar","noChips","noSoda"];
+  const actionKeys = ["water","fruit","vitamin","milk","dental"];
+  const preventionTotal = preventionKeys.reduce((sum,key)=>sum + countPrevent(data,key), 0);
+  const actionTotal = actionKeys.reduce((sum,key)=>sum + count(data,key), 0);
+  const preventionTarget = TARGETS.noSmoke * preventionKeys.length;
+  const actionTarget = TARGETS.water * actionKeys.length;
+  const prevention = pct(preventionTotal, preventionTarget);
+  const action = pct(actionTotal, actionTarget);
+  const negativeTalk = pct(count(data,"noNegativeTalk"), TARGETS.noSmoke);
+  const health = Math.round((prevention + action) / 2);
+  const learningTotal = data.reduce((total, entry) => total + normalizeLearning(entry).reduce((a,b)=>a+(parseFloat(b.hours)||0),0), 0);
+  const learning = pct(learningTotal, TARGETS.learningHours);
+
+  let cultureScores = Object.keys(TARGETS.culture).map(type => {
+    const done = data.reduce((total, entry) => total + normalizeCulture(entry).filter(c=>c.type===type && c.title).length, 0);
+    return pct(done, TARGETS.culture[type]);
+  });
+  const culture = Math.round(cultureScores.reduce((a,b)=>a+b,0)/cultureScores.length);
+  const cont = pct(count(data,"continuedAfterBreak"), TARGETS.continue);
+  const year = Math.round((health + negativeTalk + learning + culture + cont) / 5);
+
+  $("#preventScore").textContent = prevention+"%"; setBar("#preventBar", prevention);
+  $("#actionScore").textContent = action+"%"; setBar("#actionBar", action);
+  $("#negativeTalkScore").textContent = negativeTalk+"%"; setBar("#negativeTalkBar", negativeTalk);
+  $("#learningScore").textContent = learning+"%"; setBar("#learningBar", learning);
+  $("#cultureScore").textContent = culture+"%"; setBar("#cultureBar", culture);
+  $("#continueScore").textContent = cont+"%"; setBar("#continueBar", cont);
+  $("#yearScore").textContent = year+"%";
+
+  $("#preventSub").textContent = preventionTotal + " تیک منع از " + preventionTarget;
+  $("#actionSub").textContent = actionTotal + " تیک انجام از " + actionTarget;
+  $("#negativeTalkSub").textContent = count(data,"noNegativeTalk") + " روز از " + TARGETS.noSmoke;
+  $("#learningSub").textContent = learningTotal.toFixed(1) + " ساعت از 520 ساعت";
+  const cultureTotal = data.reduce((total, entry) => total + normalizeCulture(entry).length, 0);
+  $("#cultureSub").textContent = cultureTotal + " تجربه فرهنگی ثبت شده";
+
+  const wrap = $("#cultureProgress");
+  wrap.innerHTML = "";
+  Object.entries(TARGETS.culture).forEach(([type,target])=>{
+    const done = data.reduce((total, entry) => total + normalizeCulture(entry).filter(c=>c.type===type && c.title).length, 0);
+    const p = pct(done,target);
+    const div = document.createElement("div");
+    div.className = "progress-row";
+    div.innerHTML = `<b>${type}</b><div class="bar"><div class="fill purple" style="width:${p}%"></div></div><span>${done}/${target}</span>`;
+    wrap.appendChild(div);
+  });
+  renderLogs();
+}
+
+function renderLogs(){
+  const data = load().slice().reverse();
+  const list = $("#logList");
+  if(!list) return;
+  if(data.length===0){ list.innerHTML = `<div class="empty">هنوز چیزی ثبت نکرده‌ای.</div>`; return; }
+  list.innerHTML = "";
+  data.slice(0,30).forEach(x=>{
+    const health = [x.noSmoke?"🚭":null,x.water?"💧":null,x.fruit?"🍎":null,x.vitamin?"💊":null,x.milk?"🥛":null,x.dental?"🦷":null,x.noNegativeTalk?"🤐":null,x.exercise?"🚶":null].filter(Boolean).join(" ");
+    const item = document.createElement("div");
+    item.className="item";
+    item.innerHTML = `
+      <div class="item-top">
+        <div class="item-title">${x.date || ""}</div>
+        <div class="badge">${normalizeLearning(x).reduce((a,b)=>a+(parseFloat(b.hours)||0),0).toFixed(1)}h یادگیری</div>
+      </div>
+      <div class="small" style="margin-top:7px">${health || "بدون تیک سلامت"} ${normalizeCulture(x).length ? " · 🎭 " + normalizeCulture(x).map(c=>c.type + ": " + c.title + (c.rating ? " ⭐" + c.rating + "/10" : "")).join("، ") : ""}</div>
+      ${x.note ? `<div class="small" style="margin-top:7px;color:#E2E8F0">${x.note}</div>` : ""}
+    `;
+    list.appendChild(item);
+  });
+}
+
+
+function learningTemplate(topic="", hours=""){
+  const id = "l_" + Math.random().toString(36).slice(2);
+  return `<div class="entry-card learning-entry" data-id="${id}">
+    <div class="entry-head"><b>موضوع‌های یادگیری</b><button class="remove-entry" type="button">حذف</button></div>
+    <div class="row">
+      <select class="learning-topic">
+        <option value="">انتخاب کن</option>
+        <option ${topic==="کنکور دکتری"?"selected":""}>کنکور دکتری</option>
+        <option ${topic==="دیتاساینس"?"selected":""}>دیتاساینس</option>
+        <option ${topic==="فارکس"?"selected":""}>فارکس</option>
+        <option ${topic==="مدیریت/تحقیق بازار"?"selected":""}>مدیریت/تحقیق بازار</option>
+        <option ${topic==="زبان فرانسه"?"selected":""}>زبان فرانسه</option>
+        <option ${topic==="زبان انگلیسی"?"selected":""}>زبان انگلیسی</option>
+        <option ${topic==="سایر"?"selected":""}>سایر</option>
+      </select>
+      <input class="learning-hours" type="number" min="0" step="0.25" placeholder="ساعت" value="${hours}">
+    </div>
+  </div>`;
+}
+function cultureTemplate(type="", title="", image="", rating=""){
+  const id = "c_" + Math.random().toString(36).slice(2);
+  const types = ["کتاب","آلبوم موسیقی","فیلم","سریال","بردگیم","ویدیوگیم","سفر"];
+  return `<div class="entry-card culture-entry" data-id="${id}" data-image="${image ? String(image).replaceAll('"','&quot;') : ""}">
+    <div class="entry-head"><b>تجربه فرهنگی</b><button class="remove-entry" type="button">حذف</button></div>
+    <div class="row">
+      <select class="culture-type">
+        <option value="">انتخاب کن</option>
+        ${types.map(t=>`<option ${type===t?"selected":""}>${t}</option>`).join("")}
+      </select>
+      <input class="culture-title" placeholder="عنوان" value="${String(title||"").replaceAll('"','&quot;')}">
+    </div>
+    <div class="rating-row">
+      <div>
+        <label>امتیاز شخصی</label>
+        <select class="culture-rating">
+          <option value="">بدون امتیاز</option>
+          ${[10,9,8,7,6,5,4,3,2,1].map(n=>`<option value="${n}" ${String(rating)===String(n)?"selected":""}>${n}/10</option>`).join("")}
+        </select>
+      </div>
+      <div class="small">اختیاری</div>
+    </div>
+    <div class="upload-box">
+      <div class="small">کاور / thumbnail (اختیاری)</div>
+      <input class="culture-file" type="file" accept="image/*">
+      <div class="culture-preview" style="${image ? "display:block" : "display:none"}">
+        <img src="${image || ""}" alt="">
+      </div>
+    </div>
+  </div>`;
+}
+function addLearningEntry(topic="", hours=""){
+  $("#learningEntries").insertAdjacentHTML("beforeend", learningTemplate(topic, hours));
+}
+function addCultureEntry(type="", title="", image="", rating=""){
+  $("#cultureEntries").insertAdjacentHTML("beforeend", cultureTemplate(type, title, image, rating));
+}
+function collectLearningEntries(){
+  return $$(".learning-entry").map(el=>({
+    topic: el.querySelector(".learning-topic").value,
+    hours: parseFloat(el.querySelector(".learning-hours").value)||0
+  })).filter(x=>x.topic || x.hours);
+}
+function collectCultureEntries(){
+  return $$(".culture-entry").map(el=>({
+    type: el.querySelector(".culture-type").value,
+    title: el.querySelector(".culture-title").value.trim(),
+    image: el.dataset.image || "",
+    rating: el.querySelector(".culture-rating") ? el.querySelector(".culture-rating").value : ""
+  })).filter(x=>x.type && x.title);
+}
+function normalizeLearning(entry){
+  if(Array.isArray(entry.learningEntries)) return entry.learningEntries;
+  if(entry.learningTopic || entry.learningHours) return [{topic: entry.learningTopic || "", hours: parseFloat(entry.learningHours)||0}];
+  return [];
+}
+function normalizeCulture(entry){
+  if(Array.isArray(entry.cultureEntries)) return entry.cultureEntries.map(c=>({type:c.type||"", title:c.title||"", image:c.image||c.thumbnail||"", rating:c.rating||""}));
+  if(entry.cultureType && entry.cultureTitle) return [{type: entry.cultureType, title: entry.cultureTitle, image: entry.cultureImage || "", rating: entry.cultureRating || ""}];
+  return [];
+}
+
+function resetForm(){
+  $("#date").value = todayISO();
+  $$(".toggle").forEach(b=>b.classList.remove("active"));
+  $("#learningEntries").innerHTML = "";
+  $("#cultureEntries").innerHTML = "";
+  addLearningEntry();
+  addCultureEntry();
+  $("#note").value = "";
+}
+
+$$(".nav button").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    $$(".nav button").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    $$(".screen").forEach(s=>s.classList.remove("active"));
+    $("#"+btn.dataset.screen).classList.add("active");
+    updateDashboard();
+  });
+});
+
+
+document.addEventListener("change", (e)=>{
+  if(e.target.classList.contains("culture-file")){
+    processCultureFileInput(e.target);
+  }
+});
+
+document.addEventListener("click", (e)=>{
+  if(e.target.classList.contains("filter-pill")){
+    activeCultureFilter = e.target.dataset.filter || "همه";
+    $$(".filter-pill").forEach(b=>b.classList.remove("active"));
+    e.target.classList.add("active");
+    renderCultureGallery();
+  }
+});
+
+
+$$(".toggle").forEach(btn=>{
+  btn.addEventListener("click", (e)=>{
+    e.preventDefault();
+    btn.classList.toggle("active");
+  });
+});
+
+$("#addLearning").addEventListener("click", ()=>addLearningEntry());
+$("#addCulture").addEventListener("click", ()=>addCultureEntry());
+document.addEventListener("click", (e)=>{
+  if(e.target.classList.contains("remove-entry")){
+    const card = e.target.closest(".entry-card");
+    const parent = card.parentElement;
+    card.remove();
+    if(parent.id==="learningEntries" && parent.children.length===0) addLearningEntry();
+    if(parent.id==="cultureEntries" && parent.children.length===0) addCultureEntry();
+  }
+});
+
+$("#saveBtn").addEventListener("click", ()=>{
+  const entry = {
+    id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
+    date: $("#date").value || todayISO(),
+    noSmoke: document.querySelector('[data-key="noSmoke"]').classList.contains("active"),
+    water: document.querySelector('[data-key="water"]').classList.contains("active"),
+    fruit: document.querySelector('[data-key="fruit"]').classList.contains("active"),
+    vitamin: document.querySelector('[data-key="vitamin"]').classList.contains("active"),
+    milk: document.querySelector('[data-key="milk"]') ? document.querySelector('[data-key="milk"]').classList.contains("active") : false,
+    dental: document.querySelector('[data-key="dental"]') ? document.querySelector('[data-key="dental"]').classList.contains("active") : false,
+    noNegativeTalk: document.querySelector('[data-key="noNegativeTalk"]') ? document.querySelector('[data-key="noNegativeTalk"]').classList.contains("active") : false,
+    exercise: document.querySelector('[data-key="exercise"]').classList.contains("active"),
+    noFastFood: document.querySelector('[data-key="noFastFood"]') ? document.querySelector('[data-key="noFastFood"]').classList.contains("active") : false,
+    noSugar: document.querySelector('[data-key="noSugar"]') ? document.querySelector('[data-key="noSugar"]').classList.contains("active") : false,
+    noChips: document.querySelector('[data-key="noChips"]') ? document.querySelector('[data-key="noChips"]').classList.contains("active") : false,
+    noSoda: document.querySelector('[data-key="noSoda"]') ? document.querySelector('[data-key="noSoda"]').classList.contains("active") : false,
+    learningEntries: collectLearningEntries(),
+    cultureEntries: collectCultureEntries(),
+    continuedAfterBreak: document.querySelector('[data-key="continuedAfterBreak"]').classList.contains("active"),
+    didNotRestart: document.querySelector('[data-key="didNotRestart"]').classList.contains("active"),
+    note: $("#note").value.trim(),
+    createdAt: new Date().toISOString()
+  };
+  const data = load();
+  const existing = data.findIndex(x=>x.date===entry.date);
+  if(existing >= 0){
+    if(confirm("برای این تاریخ قبلاً ثبت داری. جایگزین شود؟")) data[existing] = entry; else return;
+  } else data.push(entry);
+  data.sort((a,b)=>a.date.localeCompare(b.date));
+  saveAll(data);
+  toast("ثبت امروز ذخیره شد");
+  resetForm();
+  updateDashboard();
+});
+
+function download(name, content, type){
+  const blob = new Blob([content], {type});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+$("#exportJson").addEventListener("click", ()=>{
+  download("life-os-age-38-backup.json", JSON.stringify(load(), null, 2), "application/json");
+});
+$("#exportCsv").addEventListener("click", ()=>{
+  const data = load();
+  const cols = ["date","noSmoke","noFastFood","noSugar","noChips","noSoda","water","fruit","vitamin","milk","dental","noNegativeTalk","exercise","learningTotal","learningEntries","cultureEntries","continuedAfterBreak","didNotRestart","note"];
+  const esc = v => `"${String(v??"").replaceAll('"','""')}"`;
+  const csvRows = data.map(r=>{
+    const row = {...r};
+    row.learningTotal = normalizeLearning(r).reduce((a,b)=>a+(parseFloat(b.hours)||0),0);
+    row.learningEntries = normalizeLearning(r).map(x=>`${x.topic}:${x.hours}h`).join(" | ");
+    row.cultureEntries = normalizeCulture(r).map(x=>`${x.type}:${x.title}`).join(" | ");
+    return cols.map(c=>esc(row[c])).join(",");
+  });
+  const csv = [cols.join(","), ...csvRows].join("\n");
+  download("life-os-age-38-checkins.csv", "\ufeff"+csv, "text/csv;charset=utf-8");
+});
+$("#importJson").addEventListener("change", async e=>{
+  const f = e.target.files[0]; if(!f) return;
+  const text = await f.text();
+  try{
+    const incoming = JSON.parse(text);
+    if(Array.isArray(incoming)) {
+      saveAll(incoming);
+    } else if(incoming.entries && Array.isArray(incoming.entries)) {
+      saveAll(incoming.entries);
+      if(incoming.meta) saveMeta(incoming.meta);
+    } else {
+      throw new Error("bad");
+    }
+    toast("بکاپ وارد شد");
+    updateDashboard();
+  }catch(err){ alert("فایل JSON معتبر نیست."); }
+});
+$("#clearData").addEventListener("click", ()=>{
+  if(confirm("همه داده‌های ذخیره‌شده روی این مرورگر پاک شود؟")){
+    localStorage.removeItem(KEY);
+    toast("داده‌ها پاک شد");
+    updateDashboard();
+  }
+});
+
+if($("#saveReview")) $("#saveReview").addEventListener("click", saveWeeklyReview);
+resetForm();
+updateDashboard();
+</script>
+
+<script>
+
+let deferredInstallPrompt = null;
+function isStandaloneMode(){
+  return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+}
+function updateInstallCard(){
+  const card = document.getElementById("installCard");
+  const text = document.getElementById("installText");
+  if(!card || !text) return;
+  card.classList.add("show");
+  if(isStandaloneMode()){
+    text.textContent = "اپ نصب شده و به‌صورت مستقل اجرا می‌شود.";
+    const btn = document.getElementById("installAppBtn");
+    if(btn) btn.style.display = "none";
+  } else if(location.protocol !== "https:" && location.protocol !== "http:"){
+    text.textContent = "برای نصب واقعی PWA باید اپ را از آدرس HTTPS مثل GitHub Pages باز کنی. فایل HTML مستقیم معمولاً فقط shortcut می‌شود.";
+  }
+}
+window.addEventListener("beforeinstallprompt", (e)=>{
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  updateInstallCard();
+});
+window.addEventListener("appinstalled", ()=>{
+  deferredInstallPrompt = null;
+  updateInstallCard();
+});
+document.addEventListener("DOMContentLoaded", ()=>{
+  updateInstallCard();
+  const installBtn = document.getElementById("installAppBtn");
+  if(installBtn){
+    installBtn.addEventListener("click", async ()=>{
+      if(deferredInstallPrompt){
+        deferredInstallPrompt.prompt();
+        await deferredInstallPrompt.userChoice;
+        deferredInstallPrompt = null;
+        updateInstallCard();
+      } else {
+        alert("از منوی سه‌نقطه Chrome گزینه Add to Home screen یا Install app را بزن. اگر بعد از باز شدن نوار آدرس نداشت، نصب درست انجام شده است.");
+      }
+    });
+  }
+  const helpBtn = document.getElementById("installHelpBtn");
+  if(helpBtn){
+    helpBtn.addEventListener("click", ()=>{
+      alert("سایت را از GitHub Pages با HTTPS باز کن، چند ثانیه صبر کن، سپس منوی سه‌نقطه Chrome را بزن و Add to Home screen یا Install app را انتخاب کن.");
+    });
+  }
+});
+if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./service-worker.js")
+      .then(() => console.log("Life OS service worker registered"))
+      .catch(err => console.log("Service worker registration failed:", err));
+  });
+}
+
+</script>
+</body>
+</html>
